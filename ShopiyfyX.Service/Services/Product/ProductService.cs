@@ -1,7 +1,6 @@
-﻿using ShopiyfyX.Service.DTOs.ProductDto;
+﻿using ShopiyfyX.Data.Repositories;
+using ShopiyfyX.Service.DTOs.ProductDto;
 using ShopiyfyX.Service.Interfaces.Product;
-using ShopiyfyX.Data.IRepositories;
-using ShopiyfyX.Data.Repositories;
 
 namespace ShopiyfyX.Service.Services.Product;
 

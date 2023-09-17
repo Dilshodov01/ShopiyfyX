@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShopiyfyX.Data\ShopiyfyX.Data.csproj" />
-    <ProjectReference Include="..\ShopiyfyX.Domain\ShopiyfyX.Domain.csproj" />
   </ItemGroup>
 
 </Project>

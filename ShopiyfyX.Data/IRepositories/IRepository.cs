@@ -1,6 +1,6 @@
 ﻿namespace ShopiyfyX.Data.IRepositories;
 
-internal interface IRepository<TEntity>
+public interface IRepository<TEntity>
 {
     public Task<bool> DeleteAsync(long id);
     public Task<List<TEntity>> SelectAllAsync();
