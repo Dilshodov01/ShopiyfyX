@@ -1,8 +1,8 @@
-﻿using ShopiyfyX.Service.DTOs;
+﻿using ShopiyfyX.Service.DTOs.UserDto;
 
 namespace ShopiyfyX.Service.Interfaces.User;
 
-public interface IUserInterface
+public interface IUserService
 {
     public Task<bool> RemoveAsync(long id);
     public Task<List<UserForResultDto>> GetAllAsync();

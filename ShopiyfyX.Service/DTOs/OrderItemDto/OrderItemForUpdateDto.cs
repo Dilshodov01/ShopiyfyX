@@ -1,4 +1,4 @@
-﻿namespace ShopiyfyX.Service.DTOs;
+﻿namespace ShopiyfyX.Service.DTOs.OrderItemDto;
 
 public class OrderItemForUpdateDto
 {

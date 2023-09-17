@@ -1,4 +1,4 @@
-﻿namespace ShopiyfyX.Service.DTOs;
+﻿namespace ShopiyfyX.Service.DTOs.UserDto;
 
 public class UserForCreationDto
 {

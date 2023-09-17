@@ -1,6 +1,6 @@
-﻿namespace ShopiyfyX.Service.DTOs;
+﻿namespace ShopiyfyX.Service.DTOs.OrderDto;
 
-public class OrderForResultDto
+public class OrderForUpdateDto
 {
     public long Id { get; set; }
     public long UserId { get; set; }

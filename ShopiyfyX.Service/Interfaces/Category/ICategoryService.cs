@@ -1,4 +1,4 @@
-﻿using ShopiyfyX.Service.DTOs;
+﻿using ShopiyfyX.Service.DTOs.CategoryDto;
 
 namespace ShopiyfyX.Service.Interfaces.Category;
 

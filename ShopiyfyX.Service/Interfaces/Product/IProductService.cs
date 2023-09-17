@@ -1,4 +1,4 @@
-﻿using ShopiyfyX.Service.DTOs;
+﻿using ShopiyfyX.Service.DTOs.ProductDto;
 
 namespace ShopiyfyX.Service.Interfaces.Product;
 
