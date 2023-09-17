@@ -68,7 +68,7 @@ namespace ShopiyfyX.Service.Services
             foreach (var product in products)
             {
                 var mappedUser = new ProductForResultDto()
-                {
+                {    
                     Id = product.Id,
                     ProductName = product.ProductName,
                     Price = product.Price,
