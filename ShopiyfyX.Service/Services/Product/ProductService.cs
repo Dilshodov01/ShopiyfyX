@@ -1,14 +1,15 @@
 ﻿using ShopiyfyX.Domain.Entities;
-using ShopiyfyX.Data.Repositories;
-using ShopiyfyX.Data.IRepositories;
-using ShopiyfyX.Service.DTOs.ProductDto;
-using ShopiyfyX.Service.Interfaces.Product;
-using ShopiyfyX.Service.Exceptions;
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using ShopiyfyX.Data.Repositories;
+using ShopiyfyX.Data.IRepositories;
+using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Service.DTOs.UserDto;
+using ShopiyfyX.Service.DTOs.ProductDto;
+using ShopiyfyX.Service.Interfaces.Product;
 
 namespace ShopiyfyX.Service.Services
 {
