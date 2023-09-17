@@ -1,6 +1,7 @@
-﻿using ShopiyfyX.Data.IRepositories;
+﻿using ShopiyfyX.Domain.Entities;
 using ShopiyfyX.Data.Repositories;
-using ShopiyfyX.Domain.Entities;
+using ShopiyfyX.Service.Exceptions;
+using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Service.DTOs.UserDto;
 using ShopiyfyX.Service.Interfaces.User;
 
@@ -8,30 +9,117 @@ namespace ShopiyfyX.Service.Services;
 
 public class UserService : IUserService
 {
-    private readonly IRepository<User> productRepository = new Repository<User>();
-
-    public Task<UserForResultDto> CreateAsync(UserForCreationDto dto)
+    private readonly IRepository<User> userRepository = new Repository<User>();
+    public async Task<UserForResultDto> CreateAsync(UserForCreationDto dto)
     {
-        throw new NotImplementedException();
+
+        var user =(await this.userRepository.SelectAllAsync()).FirstOrDefault(x=>x.Email.ToLower()==dto.Email.ToLower());
+        if (user is not null)
+            throw new ShopifyXException(400, "User is already exist");
+        var person = new User()
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            Email = dto.Email,
+            Password = dto.Password,
+            PhoneNumber = dto.PhoneNumber,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var  response= await  this.userRepository.UpdateAsync(person);
+
+        var result = new UserForResultDto()
+        {
+            Id=response.Id,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PhoneNumber=dto.PhoneNumber,
+        };
+
+        return result;
+        
+
     }
 
-    public Task<List<UserForResultDto>> GetAllAsync()
+    public async Task<List<UserForResultDto>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var data = await this.userRepository.SelectAllAsync();
+        var result = new List<UserForResultDto>();
+        foreach (var item in data)
+        {
+            var person = new UserForResultDto()
+            {
+                Id = item.Id,
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                PhoneNumber = item.PhoneNumber,
+            };
+            result.Add(person);
+        }
+       
+        return result;
     }
 
-    public Task<UserForResultDto> GetByIdAsync(long id)
+    public async Task<UserForResultDto> GetByIdAsync(long id)
     {
-        throw new NotImplementedException();
+        var data = await this.userRepository.SelectByIdAsync(id);
+        if(data == null)
+        {
+            throw new ShopifyXException(404 , "User is not found");
+        }
+
+        var person = new UserForResultDto()
+        {
+            Id = data.Id,
+            FirstName = data.FirstName,
+            LastName = data.LastName,
+            PhoneNumber = data.PhoneNumber,
+
+        };
+        return person;
     }
 
-    public Task<bool> RemoveAsync(long id)
+    public async Task<bool> RemoveAsync(long id)
     {
-        throw new NotImplementedException();
+        var datas = await this.userRepository.SelectByIdAsync(id);
+        if (datas == null)
+            throw new ShopifyXException(404, "User is not found");
+        else
+        {
+            var result=await this.userRepository.DeleteAsync(datas.Id);
+            return result;
+        }
+        return false;
     }
 
-    public Task<UserForUpdateDto> UpdateAsync(UserForUpdateDto dto)
+    public async Task<UserForUpdateDto> UpdateAsync(UserForUpdateDto dto)
     {
-        throw new NotImplementedException();
+        var data = await this.userRepository.SelectByIdAsync(dto.Id);
+        if (data == null)
+            throw new ShopifyXException(404, "User is not found");
+
+        var person = new User()
+        {
+            Id = dto.Id,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PhoneNumber = dto.PhoneNumber,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var user= await this.userRepository.UpdateAsync(person);
+
+        var result = new UserForUpdateDto()
+        {
+            Id = dto.Id,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PhoneNumber = dto.PhoneNumber,
+
+        };
+
+        return result;
+
     }
+
 }
