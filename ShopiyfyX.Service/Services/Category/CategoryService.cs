@@ -84,6 +84,17 @@ public class CategoryService : ICategoryService
         var data = await this.category.SelectByIdAsync(dto.Id);
         if(data == null)
             throw new ShopifyXException(404, "Category is not found.");
+<<<<<<< HEAD
+=======
+
+        var mappingcategory = new Category()
+        {
+            Id = dto.Id,
+            CategoryName = dto.CategoryName,
+        };
+
+        var result = await this.category.UpdateAsync(mappingcategory);
+>>>>>>> d53122ec10b2bfd25bb5b44d6ffc8db50fa0d36b
 
         var result = new Category()
         {
