@@ -26,7 +26,7 @@ public class UserService : IUserService
             CreatedAt = DateTime.UtcNow
         };
 
-        var  response= await  this.userRepository.UpdateAsync(person);
+        var  response= await  this.userRepository.InsertAsync(person);
 
         var result = new UserForResultDto()
         {
