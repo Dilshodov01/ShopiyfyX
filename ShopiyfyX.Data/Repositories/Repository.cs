@@ -36,64 +36,50 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Auditabl
     }
     public async Task<bool> DeleteAsync(long id)
     {
-        var data = await SelectAllAsync();
-
-        var item = data.FirstOrDefault(x => x.Id == id);
-        data.Remove(item);
-
-        var str = JsonConvert.SerializeObject(data, Newtonsoft.Json.Formatting.Indented);
+        var entities = await SelectAllAsync();
+        var entity = entities.FirstOrDefault(e => e.Id == id);
+        entities.Remove(entity);
+        var str = JsonConvert.SerializeObject(entities, Newtonsoft.Json.Formatting.Indented);
         await File.WriteAllTextAsync(Path, str);
-
         return true;
     }
 
     public async Task<TEntity> InsertAsync(TEntity entity)
     {
-        var data = await SelectAllAsync();
-        var item = data.FirstOrDefault(e => e.Id == entity.Id);
-        if (item == null)
-        {
-            data.Add(entity);
-            return entity;
-        }
-        else
-        {
-            return null;
-        }
+        string str = await File.ReadAllTextAsync(Path);
+        List<TEntity> entities = JsonConvert.DeserializeObject<List<TEntity>>(str);
+        entities.Add(entity);
+        string result = JsonConvert.SerializeObject(entities, Newtonsoft.Json.Formatting.Indented);
+        await File.WriteAllTextAsync(Path, result);
 
+        return entity;
     }
 
     public async Task<List<TEntity>> SelectAllAsync()
     {
         var str = await File.ReadAllTextAsync(Path);
-        var data = JsonConvert.DeserializeObject<List<TEntity>>(str);
-
-        return data;
-
+        var entities = JsonConvert.DeserializeObject<List<TEntity>>(str);
+        return entities;
     }
 
     public async Task<TEntity> SelectByIdAsync(long id)
     {
-        var data = await SelectAllAsync();
-        var item = data.FirstOrDefault(x => x.Id == id);
-
-        return item;
-
+        return (await SelectAllAsync()).FirstOrDefault(e => e.Id == id);
     }
 
     public async Task<TEntity> UpdateAsync(TEntity entity)
     {
-        var data = await SelectAllAsync();
-
+        var entities = await SelectAllAsync();
         await File.WriteAllTextAsync(Path, "[]");
-        foreach (var item in data)
+
+        foreach (var data in entities)
         {
-            if (item.Id == entity.Id)
+            if (data.Id == entity.Id)
             {
                 await InsertAsync(entity);
                 continue;
             }
-            await InsertAsync(item);
+            await InsertAsync(data);
         }
 
         return entity;
