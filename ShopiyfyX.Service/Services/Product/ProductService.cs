@@ -104,7 +104,7 @@ namespace ShopiyfyX.Service.Services
             if (product is null)
                 throw new ShopifyXException(404, "Product is not found.");
 
-            return await this.productRepository.DeleteAsync(id); ;
+            return await this.productRepository.DeleteAsync(id);
         }
 
         public async Task<ProductForResultDto> UpdateAsync(ProductForUpdateDto dto)
