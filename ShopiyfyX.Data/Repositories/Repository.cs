@@ -1,9 +1,10 @@
 ﻿using Newtonsoft.Json;
-using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Domain.Commons;
-using ShopiyfyX.Domain.Configurations;
 using ShopiyfyX.Domain.Entities;
-using System.Xml;
+using ShopiyfyX.Data.IRepositories;
+using ShopiyfyX.Domain.Configurations;
+
+
 
 namespace ShopiyfyX.Data.Repositories;
 
