@@ -4,5 +4,6 @@ namespace ShopiyfyX.Domain.Entities;
 
 public class Category : Auditable
 {
-    public string CategoryName { get; set; }
+    public string Name { get; set; }
 }
+ 

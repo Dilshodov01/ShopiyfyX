@@ -95,8 +95,8 @@ public class UserService : IUserService
 
     public async Task<UserForResultDto> UpdateAsync(UserForUpdateDto dto)
     {
-        var data = await this.userRepository.SelectByIdAsync(dto.Id);
-        if (data == null)
+        var user = await this.userRepository.SelectByIdAsync(dto.Id);
+        if (user is null)
             throw new ShopifyXException(404, "User is not found");
 
         var person = new User()

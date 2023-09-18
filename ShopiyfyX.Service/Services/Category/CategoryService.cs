@@ -13,92 +13,93 @@ public class CategoryService : ICategoryService
  
     public async Task<CategoryForResultDto> CreateAsync(CategoryForCreationDto dto)
     {
-        var data = (await this.category.SelectAllAsync()).FirstOrDefault(x => x.CategoryName == dto.CategoryName);
-        if (data is not null)
+        var category = (await this.category.SelectAllAsync()).FirstOrDefault(x => x.Name == dto.Name);
+        if (category is not null)
             throw new ShopifyXException(404, "Category is not found.");
 
-        var mappingdata = new Category()
+        var mappedCategory = new Category()
         {
-            CategoryName = dto.CategoryName,
+            Name = dto.Name,
+            CreatedAt = DateTime.UtcNow,
         };
 
-        var result = await this.category.InsertAsync(mappingdata);
+        var result = await this.category.InsertAsync(mappedCategory);
 
-        var ResultMapping = new CategoryForResultDto()
+        var resultCategory = new CategoryForResultDto()
         {
             Id = result.Id,
-            CategoryName = result.CategoryName
+            Name = result.Name
         };
 
-        return ResultMapping;
+        return resultCategory;
         
     }
 
     public async Task<List<CategoryForResultDto>> GetAllAsync()
     {
-        var result = await this.category.SelectAllAsync();
-        var ls = new List<CategoryForResultDto>();
-        foreach(var res in result)
+        var categories = await this.category.SelectAllAsync();
+        var result = new List<CategoryForResultDto>();
+        foreach(var category in categories)
         {
-            var MappingResult = new CategoryForResultDto()
+            var meppedCategory = new CategoryForResultDto()
             {
-                Id = res.Id,
-                CategoryName = res.CategoryName,
+                Id = category.Id,
+                Name = category.Name,
             };
-            ls.Add(MappingResult);
+            result.Add(meppedCategory);
         }
 
-        return ls;
+        return result;
         
     }
 
     public async Task<CategoryForResultDto> GetByIdAsync(long id)
     {
-        var  data =await this.category.SelectByIdAsync(id);
-        if (data is null)
+        var category = await this.category.SelectByIdAsync(id);
+        if (category is null)
             throw new ShopifyXException(404, "Category is not found");
 
-        var mapping = new CategoryForResultDto()
+        var mappedResult = new CategoryForResultDto()
         {
-            Id = data.Id,
-            CategoryName = data.CategoryName,
+            Id = category.Id,
+            Name = category.Name,
         };
 
-        return mapping;
+        return mappedResult;
 
     }
 
     public async Task<bool> RemoveAsync(long id)
     {
-        var data = await this.category.SelectByIdAsync(id);
-        if(data == null)
+        var dataCategory = await this.category.SelectByIdAsync(id);
+        if(dataCategory == null)
             throw new ShopifyXException(404, "Category is not found.");
 
-        var result = await this.category.DeleteAsync(id);
-        return result;
+        return await this.category.DeleteAsync(id);
     }
 
 
     public  async Task<CategoryForResultDto> UpdateAsync(CategoryForUpdateDto dto)
     {
-        var data = await this.category.SelectByIdAsync(dto.Id);
-        if(data == null)
+        var dataCategory = await this.category.SelectByIdAsync(dto.Id);
+        if(dataCategory == null)
             throw new ShopifyXException(404, "Category is not found.");
 
         var result = new Category()
         {
             Id = dto.Id,
-            CategoryName = dto.CategoryName,
+            Name = dto.Name,
+            UpdatedAt = DateTime.UtcNow
         };
 
         await this.category.UpdateAsync(result);
 
-        var mapping = new CategoryForResultDto()
+        var mappedCategory = new CategoryForResultDto()
         {
-            Id = data.Id,
-            CategoryName = data.CategoryName,
+            Id = dataCategory.Id,
+            Name = dataCategory.Name,
         };
 
-        return mapping;
+        return mappedCategory;
     }
 }

@@ -16,15 +16,19 @@ namespace ShopiyfyX.Service.Services
     public class ProductService : IProductService
     {
         private readonly IRepository<Product> productRepository = new Repository<Product>();
-
+        private readonly IRepository<Category> categoryRepository = new Repository<Category>();
         public async Task<ProductForResultDto> CreateAsync(ProductForCreationDto dto)
         {
-            var existingProduct = (await this.productRepository.SelectAllAsync()).FirstOrDefault(x => x.ProductName.ToLower() == dto.ProductName.ToLower());
+            var existingProduct = (await this.productRepository.SelectAllAsync()).FirstOrDefault(x => x.Name.ToLower() == dto.Name.ToLower());
             if (existingProduct is null)
             {
+                var findCategory = (await this.categoryRepository.SelectByIdAsync(dto.CategoryId));
+                if (findCategory is null)
+                    throw new ShopifyXException(404, "Product's category not found.");
+
                 var product = new Product()
                 {
-                    ProductName = dto.ProductName,
+                    Name = dto.Name,
                     Price = dto.Price,
                     Description = dto.Description,
                     Quantity = dto.Quantity, // Set the initial quantity
@@ -37,7 +41,7 @@ namespace ShopiyfyX.Service.Services
                 var mappedProduct = new ProductForResultDto()
                 {
                     Id = result.Id,
-                    ProductName = result.ProductName,
+                    Name = result.Name,
                     Price = result.Price,
                     Description = result.Description,
                     Quantity = result.Quantity,
@@ -49,12 +53,13 @@ namespace ShopiyfyX.Service.Services
             {
                 // Update the quantity if the product already exists
                 existingProduct.Quantity += dto.Quantity;
+                existingProduct.UpdatedAt = DateTime.UtcNow;
                 await this.productRepository.UpdateAsync(existingProduct);
 
                 var mappedProduct = new ProductForResultDto()
                 {
                     Id = existingProduct.Id,
-                    ProductName = existingProduct.ProductName,
+                    Name = existingProduct.Name,
                     Price = existingProduct.Price,
                     Description = existingProduct.Description,
                     Quantity = existingProduct.Quantity,
@@ -74,7 +79,7 @@ namespace ShopiyfyX.Service.Services
                 var mappedUser = new ProductForResultDto()
                 {    
                     Id = product.Id,
-                    ProductName = product.ProductName,
+                    Name = product.Name,
                     Price = product.Price,
                     Description = product.Description,
                     Quantity= product.Quantity,
@@ -95,7 +100,7 @@ namespace ShopiyfyX.Service.Services
             return new ProductForResultDto()
             {
                 Id = product.Id,
-                ProductName = product.ProductName,
+                Name = product.Name,
                 Price = product.Price,
                 Description = product.Description,
                 Quantity = product.Quantity,
@@ -118,10 +123,15 @@ namespace ShopiyfyX.Service.Services
             if (user is null)
                 throw new ShopifyXException(404, "Product is not found");
 
+            // Check for category
+            var existingCategory = await this.categoryRepository.SelectByIdAsync(dto.CategoryId);
+            if (existingCategory is null)
+                throw new ShopifyXException(404, "Category is not found");
+
             var mappedProduct = new Product()
             {
                 Id = dto.Id,
-                ProductName = dto.ProductName,
+                Name = dto.Name,
                 Price = dto.Price,
                 Description = dto.Description,
                 Quantity = dto.Quantity,
@@ -134,7 +144,7 @@ namespace ShopiyfyX.Service.Services
             var result = new ProductForResultDto()
             {
                 Id = dto.Id,
-                ProductName = dto.ProductName,
+                Name = dto.Name,
                 Price = dto.Price,
                 Description = dto.Description,
                 Quantity = dto.Quantity,

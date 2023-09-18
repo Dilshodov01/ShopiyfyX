@@ -42,11 +42,11 @@ public class ProjectUI
         while (true)
         {
             Console.WriteLine("\nChoose an option:");
-            Console.WriteLine("1. Category Management");
-            Console.WriteLine("2. Order Management");
-            Console.WriteLine("3. Order Item Management");
-            Console.WriteLine("4. Product Management");
-            Console.WriteLine("5. User Management");
+            Console.WriteLine("1. User Management");
+            Console.WriteLine("2. Category Management");
+            Console.WriteLine("3. Product Management");
+            Console.WriteLine("4. Order Management");
+            Console.WriteLine("5. Order Item Management");
             Console.WriteLine("6. Exit");
             Console.Write("Enter your choice: ");
 
@@ -56,19 +56,19 @@ public class ProjectUI
             switch (choice)
             {
                 case "1":
-                    await CategoryManagementMenu();
+                    await UserManagementMenu();
                     break;
                 case "2":
-                    await OrderManagementMenu();
+                    await CategoryManagementMenu();
                     break;
                 case "3":
-                    await OrderItemManagementMenu();
-                    break;
-                case "4":
                     await ProductManagementMenu();
                     break;
+                case "4":
+                    await OrderManagementMenu();
+                    break;
                 case "5":
-                    await UserManagementMenu();
+                    await OrderItemManagementMenu();
                     break;
                 case "6":
                     Environment.Exit(0);
@@ -80,6 +80,8 @@ public class ProjectUI
         }
     }
 
+
+    // Category management
     private static async Task CategoryManagementMenu()
     {
         string loadAudio = "../../../../ShopiyfyX.Presentation/UI/qilich.wav";
@@ -117,7 +119,8 @@ public class ProjectUI
             Console.WriteLine("2. View All Categories");
             Console.WriteLine("3. Delete Category");
             Console.WriteLine("4. Get By Id From Category");
-            Console.WriteLine("5. Back to Main Menu");
+            Console.WriteLine("5. Update Category");
+            Console.WriteLine("6. Back to Main Menu");
             Console.Write("Enter your choice: ");
 
             string choice = Console.ReadLine();
@@ -138,6 +141,9 @@ public class ProjectUI
                     await GetByIdCategories();
                     break;
                 case "5":
+                    await UpdateCategory();
+                    break;
+                case "6":
                     return;
                 default:
                     Console.WriteLine("Invalid choice. Please try again.");
@@ -153,7 +159,7 @@ public class ProjectUI
             CategoryForCreationDto categoryDto = new CategoryForCreationDto();
 
             Console.WriteLine("\nEnter Category Name:");
-            categoryDto.CategoryName = Console.ReadLine();
+            categoryDto.Name = Console.ReadLine();
 
             var result = await categoryService.CreateAsync(categoryDto);
             Console.WriteLine($"Category created with ID: {result.Id}");
@@ -175,7 +181,7 @@ public class ProjectUI
         Console.WriteLine("\nList of Categories:");
         foreach (var category in categories)
         {
-            Console.WriteLine($"\nID: {category.Id},\nName: {category.CategoryName}");
+            Console.WriteLine($"\nID: {category.Id},\nName: {category.Name}");
         }
     }
 
@@ -207,7 +213,7 @@ public class ProjectUI
             long categoryId = long.Parse(Console.ReadLine());
 
             var getById = await categoryService.GetByIdAsync(categoryId);
-            Console.WriteLine($"\nId: {getById.Id},\nCategory Name: {getById.CategoryName}");
+            Console.WriteLine($"\nId: {getById.Id},\nCategory Name: {getById.Name}");
         }
         catch (ShopifyXException st)
         {
@@ -219,8 +225,32 @@ public class ProjectUI
         }
     }
 
+    private static async Task UpdateCategory()
+    {
+        try
+        {
+            var updateDto = new CategoryForUpdateDto();
+
+            Console.Write("Enter the category id: ");
+            updateDto.Id = long.Parse(Console.ReadLine());
+            Console.Write("Enter the category name: ");
+            updateDto.Name = Console.ReadLine();
+
+            var st = await categoryService.UpdateAsync(updateDto);
+            Console.WriteLine("Category updated successfully!\n");
+        }
+        catch (ShopifyXException stEx)
+        {
+            Console.WriteLine($"Error ({stEx.StatusCode}): {stEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
 
 
+    // Order management
     private static async Task OrderManagementMenu()
     {
         string loadAudio = "../../../../ShopiyfyX.Presentation/UI/qilich.wav";
@@ -302,7 +332,6 @@ public class ProjectUI
                     {
                         UserId = userId,
                         TotalAmount = totalAmount,
-                        Quantity = quantity
                     };
 
                     try
@@ -358,7 +387,7 @@ public class ProjectUI
         Console.WriteLine("\nList of Orders:");
         foreach (var order in orders)
         {
-            Console.WriteLine($"\nID: {order.Id},\nUser ID: {order.UserId},\nTotal Amount: {order.TotalAmount},\nQuantity: {order.Quantity}");
+            Console.WriteLine($"\nID: {order.Id},\nUser ID: {order.UserId},\nTotal Amount: {order.TotalAmount}");
         }
     }
 
@@ -370,7 +399,7 @@ public class ProjectUI
             long orderId = long.Parse(Console.ReadLine());
 
             var getById = await orderService.GetByIdAsync(orderId);
-            Console.WriteLine($"\nId: {getById.Id},\nOrderID: {getById.UserId},\nUmumiyHarajat: {getById.TotalAmount},\nMiqdori: {getById.Quantity}");
+            Console.WriteLine($"\nId: {getById.Id},\nOrderID: {getById.UserId},\nUmumiyHarajat: {getById.TotalAmount}");
         }
         catch (ShopifyXException st)
         {
@@ -382,6 +411,8 @@ public class ProjectUI
         }
     }
 
+
+    // Order Item management
     private static async Task OrderItemManagementMenu()
     {
         string loadAudio = "../../../../ShopiyfyX.Presentation/UI/qilich.wav";
@@ -419,7 +450,8 @@ public class ProjectUI
             Console.WriteLine("2. View All Order Items");
             Console.WriteLine("3. Delete Order Items");
             Console.WriteLine("4. Get BY Id Order Items");
-            Console.WriteLine("5. Back to Main Menu");
+            Console.WriteLine("5. Update Order Item");
+            Console.WriteLine("6. Back to Main Menu");
             Console.Write("Enter your choice: ");
 
             string choice = Console.ReadLine();
@@ -439,6 +471,9 @@ public class ProjectUI
                     await GetByIdOrderItem();
                     break;
                 case "5":
+                    await UpdateOrderItem();
+                    break;
+                case "6":
                     return;
                 default:
                     Console.WriteLine("Invalid choice. Please try again.");
@@ -462,7 +497,6 @@ public class ProjectUI
                     {
                         OrderId = orderId,
                         ProductId = productId,
-                        Quantity = quantitiy,
                     };
 
                     try
@@ -494,10 +528,9 @@ public class ProjectUI
         Console.WriteLine("\nList of Order Items:");
         foreach (var orderItem in orderItems)
         {
-            Console.WriteLine($"\nID: {orderItem.Id},\nOrder ID: {orderItem.OrderId},\nProduct ID: {orderItem.ProductId},\nQuantitiy: {orderItem.Quantity}");
+            Console.WriteLine($"\nID: {orderItem.Id},\nOrder ID: {orderItem.OrderId},\nProduct ID: {orderItem.ProductId}");
         }
     }
-
 
     private static async Task DeleteOrderItem()
     {
@@ -519,7 +552,6 @@ public class ProjectUI
         }
     }
 
-
     private static async Task GetByIdOrderItem()
     {
         try
@@ -528,7 +560,7 @@ public class ProjectUI
             long orderId = long.Parse(Console.ReadLine());
 
             var getById = await orderItemService.GetByIdAsync(orderId);
-            Console.WriteLine($"\nId: {getById.Id},\nOrderID: {getById.OrderId},\nProductID: {getById.ProductId},\nQuantitiy: {getById.Quantity}");
+            Console.WriteLine($"\nId: {getById.Id},\nOrderID: {getById.OrderId},\nProductID: {getById.ProductId}");
         }
         catch (ShopifyXException st)
         {
@@ -540,7 +572,34 @@ public class ProjectUI
         }
     }
 
+    private static async Task UpdateOrderItem()
+    {
+        try
+        {
+            var updateDto = new OrderItemForUpdateDto();
 
+            Console.Write("Enter the order item Id: ");
+            updateDto.Id = long.Parse(Console.ReadLine());
+            Console.Write("Enter the order id: ");
+            updateDto.OrderId = long.Parse(Console.ReadLine());
+            Console.Write("Enter the product id: ");
+            updateDto.ProductId = long.Parse(Console.ReadLine());
+
+            var st = await orderItemService.UpdateAsync(updateDto);
+            Console.WriteLine("Order Item updated successfully!\n");
+        }
+        catch (ShopifyXException stEx)
+        {
+            Console.WriteLine($"Error ({stEx.StatusCode}): {stEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+
+
+    // Product management
     private static async Task ProductManagementMenu()
     {
         string loadAudio = "../../../../ShopiyfyX.Presentation/UI/qilich.wav";
@@ -578,7 +637,8 @@ public class ProjectUI
             Console.WriteLine("2. View All Products");
             Console.WriteLine("3. Delete Products");
             Console.WriteLine("4. Get By Id Products");
-            Console.WriteLine("5. Back to Main Menu");
+            Console.WriteLine("5. Update Product");
+            Console.WriteLine("6. Back to Main Menu");
             Console.Write("Enter your choice: ");
 
             string choice = Console.ReadLine();
@@ -598,6 +658,9 @@ public class ProjectUI
                     await GetByIdProduct();
                     break;
                 case "5":
+                    await UpdateProduct();
+                    break;
+                case "6":
                     return;
                 default:
                     Console.WriteLine("Invalid choice. Please try again.");
@@ -622,7 +685,7 @@ public class ProjectUI
             {
                 ProductForCreationDto productDto = new ProductForCreationDto
                 {
-                    ProductName = productName,
+                    Name = productName,
                     Price = price,
                     Description = description,
                     Quantity = quantity
@@ -656,10 +719,9 @@ public class ProjectUI
         Console.WriteLine("\nList of Products:");
         foreach (var product in products)
         {
-            Console.WriteLine($"\nID: {product.Id},\nName: {product.ProductName},\nPrice: {product.Price},\nQuantity: {product.Quantity}");
+            Console.WriteLine($"\nID: {product.Id},\nName: {product.Name},\nPrice: {product.Price},\nQuantity: {product.Quantity}");
         }
     }
-
 
     private static async Task DeleteProduct()
     {
@@ -681,7 +743,6 @@ public class ProjectUI
         }
     }
 
-
     private static async Task GetByIdProduct()
     {
         try
@@ -690,7 +751,7 @@ public class ProjectUI
             long productId = long.Parse(Console.ReadLine());
 
             var getById = await productService.GetByIdAsync(productId);
-            Console.WriteLine($"\nId: {getById.Id},\nProduct name: {getById.ProductName},\nPrice: {getById.Price},\nQuantitiy: {getById.Quantity},\nDescription: {getById.Description}");
+            Console.WriteLine($"\nId: {getById.Id},\nProduct name: {getById.Name},\nPrice: {getById.Price},\nQuantitiy: {getById.Quantity},\nDescription: {getById.Description}");
         }
         catch (ShopifyXException st)
         {
@@ -702,7 +763,40 @@ public class ProjectUI
         }
     }
 
+    private static async Task UpdateProduct()
+    {
+        try
+        {
+            var updateDto = new ProductForUpdateDto();
 
+            Console.Write("Enter the product id: ");
+            updateDto.Id = long.Parse(Console.ReadLine());
+            Console.Write("Enter the product name: ");
+            updateDto.Name = Console.ReadLine();
+            Console.Write("Enter the product price: ");
+            updateDto.Price = long.Parse(Console.ReadLine());
+            Console.WriteLine("Enter the product quantity: ");
+            updateDto.Quantity = long.Parse(Console.ReadLine());
+            Console.WriteLine("Enter the category id: ");
+            updateDto.CategoryId = long.Parse(Console.ReadLine());
+            Console.WriteLine("Enter th product description: ");
+            updateDto.Description = Console.ReadLine();
+
+            var st = await productService.UpdateAsync(updateDto);
+            Console.WriteLine("Product updated successfully!\n");
+        }
+        catch (ShopifyXException stEx)
+        {
+            Console.WriteLine($"Error ({stEx.StatusCode}): {stEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+
+
+    // User management
     private static async Task UserManagementMenu()
     {
         string loadAudio = "../../../../ShopiyfyX.Presentation/UI/qilich.wav";
@@ -740,7 +834,8 @@ public class ProjectUI
             Console.WriteLine("2. View All Users");
             Console.WriteLine("3. Delete Users");
             Console.WriteLine("4. Get by Id Users");
-            Console.WriteLine("5. Back to Main Menu");
+            Console.WriteLine("5. Update Users");
+            Console.WriteLine("6. Back to Main Menu");
             Console.Write("Enter your choice: ");
 
             string choice = Console.ReadLine();
@@ -760,6 +855,9 @@ public class ProjectUI
                     await GetByIdUser();
                     break;
                 case "5":
+                    await UpdateUser();
+                    break;
+                case "6":
                     return;
                 default:
                     Console.WriteLine("Invalid choice. Please try again.");
@@ -836,7 +934,6 @@ public class ProjectUI
         }
     }
 
-
     private static async Task GetByIdUser()
     {
         try
@@ -854,6 +951,34 @@ public class ProjectUI
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+        }
+    }
+
+    private static async Task UpdateUser()
+    {
+        try
+        {
+            var updateDto = new UserForUpdateDto();
+
+            Console.Write("\nEnter the user Id: ");
+            updateDto.Id = long.Parse(Console.ReadLine());
+            Console.Write("\nEnter the first name: ");
+            updateDto.FirstName = Console.ReadLine();
+            Console.Write("\nEnter the last name: ");
+            updateDto.LastName = Console.ReadLine();
+            Console.WriteLine("\nEnter th phone number: ");
+            updateDto.PhoneNumber = Console.ReadLine();
+
+            var st = await userService.UpdateAsync(updateDto);
+            Console.WriteLine("User updated successfully!\n");
+        }
+        catch (ShopifyXException stEx)
+        {
+            Console.WriteLine($"Error ({stEx.StatusCode}): {stEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
         }
     }
 }

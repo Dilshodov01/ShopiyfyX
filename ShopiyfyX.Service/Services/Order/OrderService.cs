@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using ShopiyfyX.Domain.Entities;
+﻿using ShopiyfyX.Domain.Entities;
 using System.Collections.Generic;
 using ShopiyfyX.Data.Repositories;
 using ShopiyfyX.Data.IRepositories;
@@ -10,56 +7,38 @@ using ShopiyfyX.Service.DTOs.OrderDto;
 using ShopiyfyX.Service.DTOs.ProductDto;
 using ShopiyfyX.Service.Interfaces.Order;
 
-namespace ShopiyfyX.Service.Services
+namespace ShopiyfyX.Service
 {
     public class OrderService : IOrderService
     {
+        private readonly IRepository<User> userRepository = new Repository<User>();
         private readonly IRepository<Order> orderRepository = new Repository<Order>();
 
         public async Task<OrderForResultDto> CreateAsync(OrderForCreationDto dto)
         {
             // Check if an order with the same UserId exists
-            var existingOrder = (await this.orderRepository.SelectAllAsync())
-                .FirstOrDefault(o => o.UserId == dto.UserId);
+            var existingUser = await this.userRepository.SelectByIdAsync(dto.UserId);
+            if (existingUser is null)
+                throw new ShopifyXException(404, "User is not found.");
 
-            if (existingOrder is null)
+
+            // Order does not exist, create a new one
+            var newOrder = new Order
             {
-                // Order does not exist, create a new one
-                var newOrder = new Order
-                {
-                    UserId = dto.UserId,
-                    TotalAmount = dto.TotalAmount,
-                    Quantity = dto.Quantity,
-                    CreatedAt = DateTime.UtcNow
-                };
+                UserId = dto.UserId,
+                TotalAmount = dto.TotalAmount,
+                CreatedAt = DateTime.UtcNow
+            };
 
-                var result = await this.orderRepository.InsertAsync(newOrder);
+            var result = await this.orderRepository.InsertAsync(newOrder);
 
-                return new OrderForResultDto()
-                {
-                    Id = result.Id,
-                    UserId = result.UserId,
-                    TotalAmount = result.TotalAmount,
-                    Quantity = result.Quantity,
-                };
-            }
-
-            else
+            return new OrderForResultDto()
             {
-                // Order already exists, update its quantity
-                existingOrder.Quantity += dto.Quantity;
-                existingOrder.UpdatedAt = DateTime.UtcNow;
+                Id = result.Id,
+                UserId = result.UserId,
+                TotalAmount = result.TotalAmount,
+            };
 
-                await this.orderRepository.UpdateAsync(existingOrder);
-
-                return new OrderForResultDto()
-                {
-                    Id = existingOrder.Id,
-                    UserId = existingOrder.UserId,
-                    TotalAmount = existingOrder.TotalAmount,
-                    Quantity = existingOrder.Quantity,
-                };
-            }
         }
 
         public async Task<List<OrderForResultDto>> GetAllAsync()
@@ -74,7 +53,6 @@ namespace ShopiyfyX.Service.Services
                     Id = order.Id,
                     UserId = order.UserId,
                     TotalAmount = order.TotalAmount,
-                    Quantity = order.Quantity,
                 };
                 result.Add(mappedOrder);
             }
@@ -93,7 +71,6 @@ namespace ShopiyfyX.Service.Services
                 Id = order.Id,
                 UserId = order.UserId,
                 TotalAmount = order.TotalAmount,
-                Quantity = order.Quantity,
             };
         }
 
@@ -104,34 +81,6 @@ namespace ShopiyfyX.Service.Services
                 throw new ShopifyXException(404, "Order is not found.");
 
             return await this.orderRepository.DeleteAsync(id); ;
-        }
-
-        public async Task<OrderForResultDto> UpdateAsync(OrderForUpdateDto dto)
-        {
-            var order = await this.orderRepository.SelectByIdAsync(dto.Id);
-            if (order is null)
-                throw new ShopifyXException(404, "Order is not found");
-
-            var mappedOrder = new Order()
-            {
-                Id = dto.Id,
-                UserId = dto.UserId,
-                TotalAmount = dto.TotalAmount,
-                Quantity = dto.Quantity,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            await this.orderRepository.UpdateAsync(mappedOrder);
-
-            var result = new OrderForResultDto()
-            {
-                Id = dto.Id,
-                UserId = dto.UserId,
-                TotalAmount = dto.TotalAmount,
-                Quantity = dto.Quantity,
-            };
-
-            return result;
         }
     }
 }

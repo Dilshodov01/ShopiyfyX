@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using ShopiyfyX.Domain.Entities;
+﻿using ShopiyfyX.Domain.Entities;
 using System.Collections.Generic;
 using ShopiyfyX.Data.Repositories;
 using ShopiyfyX.Data.IRepositories;
@@ -15,6 +12,8 @@ namespace ShopiyfyX.Service;
 public class OrderItemService : IOrderItemService
 {
     private readonly IRepository<OrderItem> orderItemRepository = new Repository<OrderItem>();
+    private readonly IRepository<Order> orderRepository = new Repository<Order>();
+    private readonly IRepository<Product> productRepository = new Repository<Product>();
     public async Task<bool> RemoveAsync(long id)
     {
         var orderItem = await this.orderItemRepository.SelectByIdAsync(id);
@@ -36,7 +35,6 @@ public class OrderItemService : IOrderItemService
                 Id = order.Id,
                 OrderId = order.OrderId,
                 ProductId = order.ProductId,
-                Quantity = order.Quantity,
             };
             result.Add(mappedOrderItem);
         }
@@ -55,22 +53,24 @@ public class OrderItemService : IOrderItemService
             Id = orderItem.Id,
             OrderId = orderItem.OrderId,
             ProductId = orderItem.ProductId,
-            Quantity = orderItem.Quantity,
         };
     }
 
     public async Task<OrderItemForResultDto> UpdateAsync(OrderItemForUpdateDto dto)
     {
-        var user = await this.orderItemRepository.SelectByIdAsync(dto.Id);
-        if (user is null)
-            throw new ShopifyXException(404, "OrderItem is not found");
+        var existingOrder = await this.orderRepository.SelectByIdAsync(dto.OrderId);
+        if (existingOrder is null)
+            throw new ShopifyXException(404, "Order id is not found.");
+
+        var existingProduct = await this.productRepository.SelectByIdAsync(dto.ProductId);
+        if (existingProduct is null)
+            throw new ShopifyXException(404, "Product id is not found.");
 
         var mappedProduct = new OrderItem()
         {
             Id = dto.Id,
             OrderId = dto.OrderId,
             ProductId = dto.ProductId,
-            Quantity = dto.Quantity,
             UpdatedAt = DateTime.UtcNow
         };
 
@@ -81,36 +81,34 @@ public class OrderItemService : IOrderItemService
             Id = dto.Id,
             OrderId = dto.OrderId,
             ProductId = dto.ProductId,
-            Quantity = dto.Quantity,
         };
     }
 
     public async Task<OrderItemForResultDto> CreateAsync(OrderItemForCreationDto dto)
     {
-        var existingOrderItem = (await this.orderItemRepository.SelectAllAsync()).FirstOrDefault(x => x.OrderId== dto.OrderId);
-        if (existingOrderItem is null)
+        var existingOrder = await this.orderRepository.SelectByIdAsync(dto.OrderId);
+        if (existingOrder is null)
+            throw new ShopifyXException(404, "Order id is not found.");
+
+        var existingProduct = await this.productRepository.SelectByIdAsync(dto.ProductId);
+        if (existingProduct is null)
+            throw new ShopifyXException(404, "Product id is not found.");
+
+        var orderItem = new OrderItem()
         {
-            var orderItem = new OrderItem()
-            {
-                OrderId = dto.OrderId,
-                ProductId = dto.ProductId,
-                Quantity= dto.Quantity,
-                CreatedAt = DateTime.UtcNow
-            };
+            OrderId = dto.OrderId,
+            ProductId = dto.ProductId,
+            CreatedAt = DateTime.UtcNow
+        };
 
-            var result = await orderItemRepository.InsertAsync(orderItem);
+        var result = await orderItemRepository.InsertAsync(orderItem);
 
-            var mappedOrderItem = new OrderItemForResultDto()
-            {
-                Id = result.Id,
-                OrderId = result.OrderId,
-                ProductId = result.ProductId,
-                Quantity = result.Quantity,
-            };
-            return mappedOrderItem;
-        }
-        else
-            throw new ShopifyXException(400, "OrderItem is already exist");
-
+        var mappedOrderItem = new OrderItemForResultDto()
+        {
+            Id = result.Id,
+            OrderId = result.OrderId,
+            ProductId = result.ProductId,
+        };
+        return mappedOrderItem;
     }
 }
