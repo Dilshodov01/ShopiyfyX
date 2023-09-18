@@ -1,6 +1,6 @@
 ﻿using ShopiyfyX.Presentation.UI;
 
-namespace ShopiyfyX.Presentation;
+namespace ShopiyfyX.Presentation.ForRun;
 
 public class Program
 {
