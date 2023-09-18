@@ -1,1 +1,12 @@
-﻿
+[
+  {
+    "ProductName": "Polo-shirt",
+    "Price": 99.0,
+    "Description": "Cotton",
+    "CategoryId": 2,
+    "Quantity": 0.0,
+    "Id": 0,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "UpdatedAt": null
+  }
+]

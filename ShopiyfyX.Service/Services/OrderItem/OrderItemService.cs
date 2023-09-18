@@ -36,6 +36,7 @@ public class OrderItemService : IOrderItemService
                 Id = order.Id,
                 OrderId = order.OrderId,
                 ProductId = order.ProductId,
+                Quantity = order.Quantity,
             };
             result.Add(mappedOrderItem);
         }
@@ -54,6 +55,7 @@ public class OrderItemService : IOrderItemService
             Id = orderItem.Id,
             OrderId = orderItem.OrderId,
             ProductId = orderItem.ProductId,
+            Quantity = orderItem.Quantity,
         };
     }
 
@@ -68,6 +70,7 @@ public class OrderItemService : IOrderItemService
             Id = dto.Id,
             OrderId = dto.OrderId,
             ProductId = dto.ProductId,
+            Quantity = dto.Quantity,
             UpdatedAt = DateTime.UtcNow
         };
 
@@ -78,6 +81,7 @@ public class OrderItemService : IOrderItemService
             Id = dto.Id,
             OrderId = dto.OrderId,
             ProductId = dto.ProductId,
+            Quantity = dto.Quantity,
         };
     }
 
@@ -90,6 +94,7 @@ public class OrderItemService : IOrderItemService
             {
                 OrderId = dto.OrderId,
                 ProductId = dto.ProductId,
+                Quantity= dto.Quantity,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -100,6 +105,7 @@ public class OrderItemService : IOrderItemService
                 Id = result.Id,
                 OrderId = result.OrderId,
                 ProductId = result.ProductId,
+                Quantity = result.Quantity,
             };
             return mappedOrderItem;
         }

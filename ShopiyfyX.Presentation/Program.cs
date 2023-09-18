@@ -42,6 +42,7 @@ namespace ShopiyfyX.Presentation
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
+                Console.Clear();
 
                 switch (choice)
                 {
@@ -83,6 +84,7 @@ namespace ShopiyfyX.Presentation
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
+                Console.Clear();
 
                 switch (choice)
                 {
@@ -136,7 +138,7 @@ namespace ShopiyfyX.Presentation
             Console.WriteLine("\nList of Categories:");
             foreach (var category in categories)
             {
-                Console.WriteLine($"ID: {category.Id}, Name: {category.CategoryName}");
+                Console.WriteLine($"\nID: {category.Id},\nName: {category.CategoryName}");
             }
         }
 
@@ -168,7 +170,7 @@ namespace ShopiyfyX.Presentation
                 long categoryId = long.Parse(Console.ReadLine());
 
                 var getById = await categoryService.GetByIdAsync(categoryId);
-                Console.WriteLine($"Id: {getById.Id}, Category Name: {getById.CategoryName}");
+                Console.WriteLine($"\nId: {getById.Id},\nCategory Name: {getById.CategoryName}");
             }
             catch (ShopifyXException st)
             {
@@ -195,6 +197,7 @@ namespace ShopiyfyX.Presentation
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
+                Console.Clear();
 
                 switch (choice)
                 {
@@ -206,7 +209,7 @@ namespace ShopiyfyX.Presentation
                         break;
                     case "3":
                         await DeleteOrder();
-                            break;
+                        break;
                     case "4":
                         await GetByIdOrder();
                         break;
@@ -290,7 +293,7 @@ namespace ShopiyfyX.Presentation
             Console.WriteLine("\nList of Orders:");
             foreach (var order in orders)
             {
-                Console.WriteLine($"ID: {order.Id}, User ID: {order.UserId}, Total Amount: {order.TotalAmount}, Quantity: {order.Quantity}");
+                Console.WriteLine($"\nID: {order.Id},\nUser ID: {order.UserId},\nTotal Amount: {order.TotalAmount},\nQuantity: {order.Quantity}");
             }
         }
 
@@ -302,7 +305,7 @@ namespace ShopiyfyX.Presentation
                 long orderId = long.Parse(Console.ReadLine());
 
                 var getById = await orderService.GetByIdAsync(orderId);
-                Console.WriteLine($"Id: {getById.Id}, OrderID: {getById.UserId},UmumiyHarajat: {getById.TotalAmount} Miqdori: {getById.Quantity}");
+                Console.WriteLine($"\nId: {getById.Id},\nOrderID: {getById.UserId},\nUmumiyHarajat: {getById.TotalAmount},\nMiqdori: {getById.Quantity}");
             }
             catch (ShopifyXException st)
             {
@@ -327,7 +330,7 @@ namespace ShopiyfyX.Presentation
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
-
+                Console.Clear();
                 switch (choice)
                 {
                     case "1":
@@ -336,7 +339,7 @@ namespace ShopiyfyX.Presentation
                     case "2":
                         await ViewAllOrderItems();
                         break;
-                    case"3":
+                    case "3":
                         await DeleteOrderItem();
                         break;
                     case "4":
@@ -359,20 +362,25 @@ namespace ShopiyfyX.Presentation
                 Console.WriteLine("\nEnter Product ID:");
                 if (long.TryParse(Console.ReadLine(), out long productId))
                 {
-                    OrderItemForCreationDto orderItemDto = new OrderItemForCreationDto
+                    Console.WriteLine("\nEnter quantity: ");
+                    if (long.TryParse(Console.ReadLine(), out long quantitiy))
                     {
-                        OrderId = orderId,
-                        ProductId = productId
-                    };
+                        OrderItemForCreationDto orderItemDto = new OrderItemForCreationDto()
+                        {
+                            OrderId = orderId,
+                            ProductId = productId,
+                            Quantity = quantitiy,
+                        };
 
-                    try
-                    {
-                        var result = await orderItemService.CreateAsync(orderItemDto);
-                        Console.WriteLine($"Order Item created with ID: {result.Id}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
+                        try
+                        {
+                            var result = await orderItemService.CreateAsync(orderItemDto);
+                            Console.WriteLine($"Order Item created with ID: {result.Id}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                        }
                     }
                 }
                 else
@@ -393,7 +401,7 @@ namespace ShopiyfyX.Presentation
             Console.WriteLine("\nList of Order Items:");
             foreach (var orderItem in orderItems)
             {
-                Console.WriteLine($"ID: {orderItem.Id}, Order ID: {orderItem.OrderId}, Product ID: {orderItem.ProductId}");
+                Console.WriteLine($"\nID: {orderItem.Id},\nOrder ID: {orderItem.OrderId},\nProduct ID: {orderItem.ProductId},\nQuantitiy: {orderItem.Quantity}");
             }
         }
 
@@ -427,7 +435,7 @@ namespace ShopiyfyX.Presentation
                 long orderId = long.Parse(Console.ReadLine());
 
                 var getById = await orderItemService.GetByIdAsync(orderId);
-                Console.WriteLine($"Id: {getById.Id}, OrderID: {getById.OrderId}, ProductID: {getById.ProductId}");
+                Console.WriteLine($"\nId: {getById.Id},\nOrderID: {getById.OrderId},\nProductID: {getById.ProductId},\nQuantitiy: {getById.Quantity}");
             }
             catch (ShopifyXException st)
             {
@@ -453,7 +461,7 @@ namespace ShopiyfyX.Presentation
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
-
+                Console.Clear();
                 switch (choice)
                 {
                     case "1":
@@ -527,7 +535,7 @@ namespace ShopiyfyX.Presentation
             Console.WriteLine("\nList of Products:");
             foreach (var product in products)
             {
-                Console.WriteLine($"ID: {product.Id}, Name: {product.ProductName}, Price: {product.Price}, Quantity: {product.Quantity}");
+                Console.WriteLine($"\nID: {product.Id},\nName: {product.ProductName},\nPrice: {product.Price},\nQuantity: {product.Quantity}");
             }
         }
 
@@ -561,7 +569,7 @@ namespace ShopiyfyX.Presentation
                 long productId = long.Parse(Console.ReadLine());
 
                 var getById = await productService.GetByIdAsync(productId);
-                Console.WriteLine($"Id: {getById.Id}, Product name: {getById.ProductName}, Price: {getById.Price}, Quantitiy: {getById.Quantity}, Description: {getById.Description}");
+                Console.WriteLine($"\nId: {getById.Id},\nProduct name: {getById.ProductName},\nPrice: {getById.Price},\nQuantitiy: {getById.Quantity},\nDescription: {getById.Description}");
             }
             catch (ShopifyXException st)
             {
@@ -587,7 +595,7 @@ namespace ShopiyfyX.Presentation
                 Console.Write("Enter your choice: ");
 
                 string choice = Console.ReadLine();
-
+                Console.Clear();
                 switch (choice)
                 {
                     case "1":
@@ -628,7 +636,7 @@ namespace ShopiyfyX.Presentation
             Console.WriteLine("\nEnter Phone Number:");
             string phoneNumber = Console.ReadLine();
 
-            UserForCreationDto userDto = new UserForCreationDto
+            UserForCreationDto userDto = new UserForCreationDto()
             {
                 FirstName = firstName,
                 LastName = lastName,
@@ -655,7 +663,7 @@ namespace ShopiyfyX.Presentation
             Console.WriteLine("\nList of Users:");
             foreach (var user in users)
             {
-                Console.WriteLine($"ID: {user.Id}, First Name: {user.FirstName}, Last Name: {user.LastName}, Phone Number: {user.PhoneNumber}");
+                Console.WriteLine($"\nId: {user.Id},\nFirstname: {user.FirstName},\nLastname: {user.LastName},\nPhonenumber: {user.PhoneNumber}");
             }
         }
 
@@ -688,7 +696,7 @@ namespace ShopiyfyX.Presentation
                 long usertId = long.Parse(Console.ReadLine());
 
                 var getById = await userService.GetByIdAsync(usertId);
-                Console.WriteLine($"Id: {getById.Id}, Firstname: {getById.FirstName}, Lastname: {getById.LastName}, Phonenumber: {getById.PhoneNumber}");
+                Console.WriteLine($"\nId: {getById.Id},\nFirstname: {getById.FirstName},\nLastname: {getById.LastName},\nPhonenumber: {getById.PhoneNumber}");
             }
             catch (ShopifyXException st)
             {
@@ -701,3 +709,4 @@ namespace ShopiyfyX.Presentation
         }
     }
 }
+

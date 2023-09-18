@@ -27,8 +27,9 @@ namespace ShopiyfyX.Service.Services
                     ProductName = dto.ProductName,
                     Price = dto.Price,
                     Description = dto.Description,
+                    Quantity = dto.Quantity, // Set the initial quantity
+                    CategoryId = dto.CategoryId,
                     CreatedAt = DateTime.UtcNow,
-                    Quantity = dto.Quantity // Set the initial quantity
                 };
 
                 var result = await this.productRepository.InsertAsync(product);
@@ -39,7 +40,8 @@ namespace ShopiyfyX.Service.Services
                     ProductName = result.ProductName,
                     Price = result.Price,
                     Description = result.Description,
-                    Quantity = result.Quantity
+                    Quantity = result.Quantity,
+                    CategoryId = result.CategoryId,
                 };
                 return mappedProduct;
             }
@@ -55,7 +57,8 @@ namespace ShopiyfyX.Service.Services
                     ProductName = existingProduct.ProductName,
                     Price = existingProduct.Price,
                     Description = existingProduct.Description,
-                    Quantity = existingProduct.Quantity
+                    Quantity = existingProduct.Quantity,
+                    CategoryId = existingProduct.CategoryId,
                 };
                 return mappedProduct;
             }
@@ -74,7 +77,8 @@ namespace ShopiyfyX.Service.Services
                     ProductName = product.ProductName,
                     Price = product.Price,
                     Description = product.Description,
-                    Quantity= product.Quantity
+                    Quantity= product.Quantity,
+                    CategoryId = product.CategoryId,
                 };
                 result.Add(mappedUser);
             }
@@ -94,7 +98,8 @@ namespace ShopiyfyX.Service.Services
                 ProductName = product.ProductName,
                 Price = product.Price,
                 Description = product.Description,
-                Quantity = product.Quantity
+                Quantity = product.Quantity,
+                CategoryId = product.CategoryId,
             };
         }
 
@@ -120,6 +125,7 @@ namespace ShopiyfyX.Service.Services
                 Price = dto.Price,
                 Description = dto.Description,
                 Quantity = dto.Quantity,
+                CategoryId = dto.CategoryId,
                 UpdatedAt = DateTime.UtcNow
             };
 
@@ -132,6 +138,7 @@ namespace ShopiyfyX.Service.Services
                 Price = dto.Price,
                 Description = dto.Description,
                 Quantity = dto.Quantity,
+                CategoryId = dto.CategoryId,
             };
 
             return result;

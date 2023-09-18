@@ -14,7 +14,7 @@ public class CategoryService : ICategoryService
     public async Task<CategoryForResultDto> CreateAsync(CategoryForCreationDto dto)
     {
         var data = (await this.category.SelectAllAsync()).FirstOrDefault(x => x.CategoryName == dto.CategoryName);
-        if (data is not  null)
+        if (data is null)
             throw new ShopifyXException(404, "Category is not found.");
 
         var mappingdata = new Category()
