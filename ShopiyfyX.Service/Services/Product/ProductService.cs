@@ -31,7 +31,7 @@ namespace ShopiyfyX.Service.Services
                     Quantity = dto.Quantity // Set the initial quantity
                 };
 
-                var result = await productRepository.InsertAsync(product);
+                var result = await this.productRepository.InsertAsync(product);
 
                 var mappedProduct = new ProductForResultDto()
                 {
@@ -47,7 +47,7 @@ namespace ShopiyfyX.Service.Services
             {
                 // Update the quantity if the product already exists
                 existingProduct.Quantity += dto.Quantity;
-                await productRepository.UpdateAsync(existingProduct);
+                await this.productRepository.UpdateAsync(existingProduct);
 
                 var mappedProduct = new ProductForResultDto()
                 {

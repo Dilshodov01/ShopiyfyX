@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ShopiyfyX.Data.IRepositories;
-using ShopiyfyX.Data.Repositories;
 using ShopiyfyX.Domain.Entities;
+using System.Collections.Generic;
+using ShopiyfyX.Data.Repositories;
+using ShopiyfyX.Data.IRepositories;
+using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Service.DTOs.OrderDto;
 using ShopiyfyX.Service.DTOs.ProductDto;
-using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Service.Interfaces.Order;
 
 namespace ShopiyfyX.Service.Services
@@ -19,7 +19,7 @@ namespace ShopiyfyX.Service.Services
         public async Task<OrderForResultDto> CreateAsync(OrderForCreationDto dto)
         {
             // Check if an order with the same UserId exists
-            var existingOrder = (await orderRepository.SelectAllAsync())
+            var existingOrder = (await this.orderRepository.SelectAllAsync())
                 .FirstOrDefault(o => o.UserId == dto.UserId);
 
             if (existingOrder is null)
@@ -33,7 +33,7 @@ namespace ShopiyfyX.Service.Services
                     CreatedAt = DateTime.UtcNow
                 };
 
-                var result = await orderRepository.InsertAsync(newOrder);
+                var result = await this.orderRepository.InsertAsync(newOrder);
 
                 return new OrderForResultDto()
                 {
@@ -50,7 +50,7 @@ namespace ShopiyfyX.Service.Services
                 existingOrder.Quantity += dto.Quantity;
                 existingOrder.UpdatedAt = DateTime.UtcNow;
 
-                await orderRepository.UpdateAsync(existingOrder);
+                await this.orderRepository.UpdateAsync(existingOrder);
 
                 return new OrderForResultDto()
                 {
@@ -83,7 +83,7 @@ namespace ShopiyfyX.Service.Services
 
         public async Task<OrderForResultDto> GetByIdAsync(long id)
         {
-            var order = await orderRepository.SelectByIdAsync(id);
+            var order = await this.orderRepository.SelectByIdAsync(id);
 
             if (order is null)
                 throw new ShopifyXException(404, "Order is not found");

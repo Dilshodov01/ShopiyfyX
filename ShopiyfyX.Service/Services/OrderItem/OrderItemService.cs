@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ShopiyfyX.Data.IRepositories;
-using ShopiyfyX.Data.Repositories;
 using ShopiyfyX.Domain.Entities;
-using ShopiyfyX.Service.DTOs.OrderItemDto;
-using ShopiyfyX.Service.DTOs.ProductDto;
+using System.Collections.Generic;
+using ShopiyfyX.Data.Repositories;
+using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Service.Exceptions;
+using ShopiyfyX.Service.DTOs.ProductDto;
+using ShopiyfyX.Service.DTOs.OrderItemDto;
 using ShopiyfyX.Service.Interfaces.OrderItem;
 
 namespace ShopiyfyX.Service;
@@ -105,5 +105,6 @@ public class OrderItemService : IOrderItemService
         }
         else
             throw new ShopifyXException(400, "OrderItem is already exist");
+
     }
 }

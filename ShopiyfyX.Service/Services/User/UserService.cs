@@ -1,12 +1,13 @@
-    
-﻿namespace ShopiyfyX.Service.Services.User;
 
-﻿using ShopiyfyX.Domain.Entities;
+namespace ShopiyfyX.Service.Services.User;
+
+using ShopiyfyX.Domain.Entities;
 using ShopiyfyX.Data.Repositories;
 using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Service.DTOs.UserDto;
 using ShopiyfyX.Service.Interfaces.User;
+
 
 public class UserService : IUserService
 {
