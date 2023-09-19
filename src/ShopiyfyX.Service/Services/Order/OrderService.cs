@@ -6,6 +6,7 @@ using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Service.DTOs.OrderDto;
 using ShopiyfyX.Service.DTOs.ProductDto;
 using ShopiyfyX.Service.Interfaces.Order;
+using System.Security.Cryptography;
 
 namespace ShopiyfyX.Service
 {
@@ -13,6 +14,7 @@ namespace ShopiyfyX.Service
     {
         private readonly IRepository<User> userRepository = new Repository<User>();
         private readonly IRepository<Order> orderRepository = new Repository<Order>();
+        private int _id;
 
         public async Task<OrderForResultDto> CreateAsync(OrderForCreationDto dto)
         {
@@ -23,8 +25,10 @@ namespace ShopiyfyX.Service
 
 
             // Order does not exist, create a new one
+            await GenerateIdAsync();
             var newOrder = new Order
             {
+                Id = _id,
                 UserId = dto.UserId,
                 TotalAmount = dto.TotalAmount,
                 CreatedAt = DateTime.UtcNow
@@ -34,7 +38,7 @@ namespace ShopiyfyX.Service
 
             return new OrderForResultDto()
             {
-                Id = result.Id,
+                Id = _id,
                 UserId = result.UserId,
                 TotalAmount = result.TotalAmount,
             };
@@ -81,6 +85,23 @@ namespace ShopiyfyX.Service
                 throw new ShopifyXException(404, "Order is not found.");
 
             return await this.orderRepository.DeleteAsync(id); ;
+        }
+
+        // Generation Id
+        public async Task<long> GenerateIdAsync()
+        {
+            var orders = await orderRepository.SelectAllAsync();
+            var count = orders.Count();
+            if (count == 0)
+            {
+                _id = 1;
+            }
+            else
+            {
+                var order = orders[count - 1];
+                _id = (int)(++order.Id);
+            }
+            return _id;
         }
     }
 }

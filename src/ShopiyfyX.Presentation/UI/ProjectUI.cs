@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Media;
-using System.Threading.Tasks;
+﻿using System.Media;
 using ShopiyfyX.Service;
-using ShopiyfyX.Service.DTOs.CategoryDto;
-using ShopiyfyX.Service.DTOs.OrderDto;
-using ShopiyfyX.Service.DTOs.OrderItemDto;
-using ShopiyfyX.Service.DTOs.ProductDto;
-using ShopiyfyX.Service.DTOs.UserDto;
-using ShopiyfyX.Service.Exceptions;
-using ShopiyfyX.Service.Interfaces.Category;
-using ShopiyfyX.Service.Interfaces.Order;
-using ShopiyfyX.Service.Interfaces.OrderItem;
-using ShopiyfyX.Service.Interfaces.Product;
-using ShopiyfyX.Service.Interfaces.User;
 using ShopiyfyX.Service.Services;
-using ShopiyfyX.Service.Services.User;
+using ShopiyfyX.Service.Exceptions;
+using ShopiyfyX.Service.DTOs.UserDto;
+using ShopiyfyX.Service.DTOs.OrderDto;
+using ShopiyfyX.Service.Interfaces.User;
+using ShopiyfyX.Service.DTOs.ProductDto;
+using ShopiyfyX.Service.Interfaces.Order;
+using ShopiyfyX.Service.DTOs.CategoryDto;
+using ShopiyfyX.Service.DTOs.OrderItemDto;
+using ShopiyfyX.Service.Interfaces.Product;
+using ShopiyfyX.Service.Interfaces.Category;
+using ShopiyfyX.Service.Interfaces.OrderItem;
 
 namespace ShopiyfyX.Presentation.UI;
 
@@ -325,28 +321,20 @@ public class ProjectUI
             Console.WriteLine("\nEnter Total Amount:");
             if (decimal.TryParse(Console.ReadLine(), out decimal totalAmount))
             {
-                Console.WriteLine("\nEnter Quantity:");
-                if (int.TryParse(Console.ReadLine(), out int quantity))
+                OrderForCreationDto orderDto = new OrderForCreationDto
                 {
-                    OrderForCreationDto orderDto = new OrderForCreationDto
-                    {
-                        UserId = userId,
-                        TotalAmount = totalAmount,
-                    };
+                    UserId = userId,
+                    TotalAmount = totalAmount,
+                };
 
-                    try
-                    {
-                        var result = await orderService.CreateAsync(orderDto);
-                        Console.WriteLine($"Order created with ID: {result.Id}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }
-                }
-                else
+                try
                 {
-                    Console.WriteLine("Invalid Quantity. Please enter a valid number.");
+                    var result = await orderService.CreateAsync(orderDto);
+                    Console.WriteLine($"Order created with ID: {result.Id}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
             else
@@ -680,6 +668,9 @@ public class ProjectUI
             Console.WriteLine("\nEnter Description:");
             string description = Console.ReadLine();
 
+            Console.WriteLine("\nEnter category id:");
+            long categoryrId = long.Parse(Console.ReadLine());
+
             Console.WriteLine("\nEnter Quantity:");
             if (int.TryParse(Console.ReadLine(), out int quantity))
             {
@@ -687,6 +678,7 @@ public class ProjectUI
                 {
                     Name = productName,
                     Price = price,
+                    CategoryId = categoryrId,
                     Description = description,
                     Quantity = quantity
                 };
@@ -921,7 +913,7 @@ public class ProjectUI
             Console.WriteLine("Enter the User Id");
             long id = long.Parse(Console.ReadLine());
 
-            var deleteUser = await productService.RemoveAsync(id);
+            var deleteUser = await userService.RemoveAsync(id);
             Console.WriteLine("Successfully deleted!");
         }
         catch (ShopifyXException st)
@@ -982,5 +974,3 @@ public class ProjectUI
         }
     }
 }
-
-

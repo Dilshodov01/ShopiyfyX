@@ -4,21 +4,26 @@ using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Service.DTOs.CategoryDto;
 using ShopiyfyX.Service.Interfaces.Category;
+using System.Security.Cryptography;
 
 namespace ShopiyfyX.Service.Services;
 
 public class CategoryService : ICategoryService
 {
     private readonly IRepository<Category> category = new Repository<Category>();
- 
+    private int _id;
+
     public async Task<CategoryForResultDto> CreateAsync(CategoryForCreationDto dto)
     {
-        var category = (await this.category.SelectAllAsync()).FirstOrDefault(x => x.Name == dto.Name);
+        var category = (await this.category.SelectAllAsync())
+            .FirstOrDefault(x => x.Name == dto.Name);
         if (category is not null)
             throw new ShopifyXException(404, "Category is not found.");
 
+        await GenerateIdAsync();
         var mappedCategory = new Category()
         {
+            Id = _id,
             Name = dto.Name,
             CreatedAt = DateTime.UtcNow,
         };
@@ -27,7 +32,7 @@ public class CategoryService : ICategoryService
 
         var resultCategory = new CategoryForResultDto()
         {
-            Id = result.Id,
+            Id = _id,
             Name = result.Name
         };
 
@@ -101,5 +106,22 @@ public class CategoryService : ICategoryService
         };
 
         return mappedCategory;
+    }
+
+    // Generation Id
+    public async Task<long> GenerateIdAsync()
+    {
+        var categories = await category.SelectAllAsync();
+        var count = categories.Count();
+        if (count == 0)
+        {
+            _id = 1;
+        }
+        else
+        {
+            var category = categories[count - 1];
+            _id = (int)(++category.Id);
+        }
+        return _id;
     }
 }

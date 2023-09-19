@@ -1,6 +1,3 @@
-
-namespace ShopiyfyX.Service.Services.User;
-
 using ShopiyfyX.Domain.Entities;
 using ShopiyfyX.Data.Repositories;
 using ShopiyfyX.Service.Exceptions;
@@ -8,18 +5,25 @@ using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Service.DTOs.UserDto;
 using ShopiyfyX.Service.Interfaces.User;
 
+namespace ShopiyfyX.Service;
 
 public class UserService : IUserService
 {
     private readonly IRepository<User> userRepository = new Repository<User>();
+    private int _id;
+
     public async Task<UserForResultDto> CreateAsync(UserForCreationDto dto)
     {
 
-        var user = (await this.userRepository.SelectAllAsync()).FirstOrDefault(x => x.Email.ToLower() == dto.Email.ToLower());
+        var user = (await this.userRepository.SelectAllAsync())
+            .FirstOrDefault(x => x.Email.ToLower() == dto.Email.ToLower());
         if (user is not null)
             throw new ShopifyXException(400, "User is already exist");
+
+        await GenerateIdAsync();
         var person = new User()
         {
+            Id = _id,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             Email = dto.Email,
@@ -32,7 +36,7 @@ public class UserService : IUserService
 
         var result = new UserForResultDto()
         {
-            Id = response.Id,
+            Id = _id,
             FirstName = dto.FirstName,
             LastName = dto.LastName,
             PhoneNumber = dto.PhoneNumber,
@@ -86,11 +90,8 @@ public class UserService : IUserService
         var datas = await this.userRepository.SelectByIdAsync(id);
         if (datas is null)
             throw new ShopifyXException(404, "User is not found");
-        else
-        {
-            var result = await this.userRepository.DeleteAsync(datas.Id);
-            return result;
-        }
+        
+        return await this.userRepository.DeleteAsync(datas.Id);
     }
 
     public async Task<UserForResultDto> UpdateAsync(UserForUpdateDto dto)
@@ -120,6 +121,22 @@ public class UserService : IUserService
         };
 
         return result;
+    }
 
+    // Generation Id
+    public async Task<long> GenerateIdAsync()
+    {
+        var users = await userRepository.SelectAllAsync();
+        var count = users.Count();
+        if (count == 0)
+        {
+            _id = 1;
+        }
+        else
+        {
+            var user = users[count - 1];
+            _id = (int)(++user.Id);
+        }
+        return _id;
     }
 }

@@ -3,18 +3,12 @@ using ShopiyfyX.Domain.Commons;
 using ShopiyfyX.Domain.Entities;
 using ShopiyfyX.Data.IRepositories;
 using ShopiyfyX.Domain.Configurations;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ShopiyfyX.Data.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : Auditable
     {
         private readonly string Path;
-        private long LastUsedId = 0; // Add a field to keep track of the last used ID
 
         public Repository()
         {
@@ -38,15 +32,6 @@ namespace ShopiyfyX.Data.Repositories
             var str = File.ReadAllText(Path);
             if (string.IsNullOrEmpty(str))
                 File.WriteAllText(Path, "[]");
-            else
-            {
-                // Calculate the last used ID when the repository is initialized
-                var entities = JsonConvert.DeserializeObject<List<TEntity>>(str);
-                if (entities.Count > 0)
-                {
-                    LastUsedId = entities.Max(e => e.Id);
-                }
-            }
         }
 
         public async Task<bool> DeleteAsync(long id)
@@ -61,9 +46,6 @@ namespace ShopiyfyX.Data.Repositories
 
         public async Task<TEntity> InsertAsync(TEntity entity)
         {
-            // Generate a new ID and assign it to the entity
-            entity.Id = ++LastUsedId;
-
             string str = await File.ReadAllTextAsync(Path);
             List<TEntity> entities = JsonConvert.DeserializeObject<List<TEntity>>(str);
             entities.Add(entity);

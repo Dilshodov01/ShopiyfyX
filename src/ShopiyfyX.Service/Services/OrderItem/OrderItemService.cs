@@ -6,6 +6,7 @@ using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Service.DTOs.ProductDto;
 using ShopiyfyX.Service.DTOs.OrderItemDto;
 using ShopiyfyX.Service.Interfaces.OrderItem;
+using System.Security.Cryptography;
 
 namespace ShopiyfyX.Service;
 
@@ -14,6 +15,8 @@ public class OrderItemService : IOrderItemService
     private readonly IRepository<OrderItem> orderItemRepository = new Repository<OrderItem>();
     private readonly IRepository<Order> orderRepository = new Repository<Order>();
     private readonly IRepository<Product> productRepository = new Repository<Product>();
+    private int _id;
+
     public async Task<bool> RemoveAsync(long id)
     {
         var orderItem = await this.orderItemRepository.SelectByIdAsync(id);
@@ -94,8 +97,10 @@ public class OrderItemService : IOrderItemService
         if (existingProduct is null)
             throw new ShopifyXException(404, "Product id is not found.");
 
+        await GenerateIdAsync();
         var orderItem = new OrderItem()
         {
+            Id = _id,
             OrderId = dto.OrderId,
             ProductId = dto.ProductId,
             CreatedAt = DateTime.UtcNow
@@ -105,10 +110,27 @@ public class OrderItemService : IOrderItemService
 
         var mappedOrderItem = new OrderItemForResultDto()
         {
-            Id = result.Id,
+            Id = _id,
             OrderId = result.OrderId,
             ProductId = result.ProductId,
         };
         return mappedOrderItem;
+    }
+
+    // Generation Id
+    public async Task<long> GenerateIdAsync()
+    {
+        var orders = await orderItemRepository.SelectAllAsync();
+        var count = orders.Count();
+        if (count == 0)
+        {
+            _id = 1;
+        }
+        else
+        {
+            var order = orders[count - 1];
+            _id = (int)(++order.Id);
+        }
+        return _id;
     }
 }

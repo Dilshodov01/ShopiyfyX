@@ -10,6 +10,8 @@ using ShopiyfyX.Service.Exceptions;
 using ShopiyfyX.Service.DTOs.UserDto;
 using ShopiyfyX.Service.DTOs.ProductDto;
 using ShopiyfyX.Service.Interfaces.Product;
+using System.Security.Cryptography;
+using ShopiyfyX.Service.DTOs.CategoryDto;
 
 namespace ShopiyfyX.Service.Services
 {
@@ -17,17 +19,22 @@ namespace ShopiyfyX.Service.Services
     {
         private readonly IRepository<Product> productRepository = new Repository<Product>();
         private readonly IRepository<Category> categoryRepository = new Repository<Category>();
+        private int _id;
+
         public async Task<ProductForResultDto> CreateAsync(ProductForCreationDto dto)
         {
-            var existingProduct = (await this.productRepository.SelectAllAsync()).FirstOrDefault(x => x.Name.ToLower() == dto.Name.ToLower());
+            var existingProduct = (await this.productRepository.SelectAllAsync())
+                .FirstOrDefault(x => x.Name.ToLower() == dto.Name.ToLower());
             if (existingProduct is null)
             {
                 var findCategory = (await this.categoryRepository.SelectByIdAsync(dto.CategoryId));
                 if (findCategory is null)
-                    throw new ShopifyXException(404, "Product's category not found.");
+                    throw new ShopifyXException(404, "Product's category is not found.");
 
+                await GenerateIdAsync();
                 var product = new Product()
                 {
+                    Id = _id,
                     Name = dto.Name,
                     Price = dto.Price,
                     Description = dto.Description,
@@ -40,7 +47,7 @@ namespace ShopiyfyX.Service.Services
 
                 var mappedProduct = new ProductForResultDto()
                 {
-                    Id = result.Id,
+                    Id = _id,
                     Name = result.Name,
                     Price = result.Price,
                     Description = result.Description,
@@ -77,12 +84,12 @@ namespace ShopiyfyX.Service.Services
             foreach (var product in products)
             {
                 var mappedUser = new ProductForResultDto()
-                {    
+                {
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
                     Description = product.Description,
-                    Quantity= product.Quantity,
+                    Quantity = product.Quantity,
                     CategoryId = product.CategoryId,
                 };
                 result.Add(mappedUser);
@@ -94,8 +101,8 @@ namespace ShopiyfyX.Service.Services
         public async Task<ProductForResultDto> GetByIdAsync(long id)
         {
             var product = await this.productRepository.SelectByIdAsync(id);
-            if (product is  null)
-                throw new ShopifyXException(404,"Product is not found.");
+            if (product is null)
+                throw new ShopifyXException(404, "Product is not found.");
 
             return new ProductForResultDto()
             {
@@ -153,6 +160,24 @@ namespace ShopiyfyX.Service.Services
 
             return result;
 
+        }
+
+
+        // Generation Id
+        public async Task<long> GenerateIdAsync()
+        {
+            var products = await productRepository.SelectAllAsync();
+            var count = products.Count();
+            if (count == 0)
+            {
+                _id = 1;
+            }
+            else
+            {
+                var product = products[count - 1];
+                _id = (int)(++product.Id);
+            }
+            return _id;
         }
     }
 }
