@@ -24,6 +24,10 @@ namespace ShopiyfyX.Data.Repositories
             {
                 this.Path = DatabasePath.CategoryDb;
             }
+            else if(typeof(OrderItem) == typeof(TEntity))
+            {
+                this.Path= DatabasePath.OrderItemDb;
+            }
             else
             {
                 this.Path = DatabasePath.OrderDb;
