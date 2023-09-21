@@ -11,6 +11,7 @@ namespace ShopiyfyX.Service.Services;
 public class CategoryService : ICategoryService
 {
     private readonly IRepository<Category> category = new Repository<Category>();
+    private readonly IRepository<Product> productRepository = new Repository<Product>();
     private int _id;
 
     public async Task<CategoryForResultDto> CreateAsync(CategoryForCreationDto dto)
@@ -79,6 +80,13 @@ public class CategoryService : ICategoryService
         var dataCategory = await this.category.SelectByIdAsync(id);
         if(dataCategory == null)
             throw new ShopifyXException(404, "Category is not found.");
+
+        var products = await this.productRepository.SelectAllAsync();
+        foreach(var product in products)
+        {
+            if(product.CategoryId == dataCategory.Id)
+                await productRepository.DeleteAsync(product.Id);
+        }
 
         return await this.category.DeleteAsync(id);
     }
